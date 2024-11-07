@@ -1,22 +1,37 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Contact from "../Contact/Contact";
 import css from "./ContactList.module.css";
+import { useEffect } from "react";
+import { fetchContacts } from "../../redux/contacts/contactsOps";
+import {
+  selectError,
+  selectFilteredContacts,
+  selectLoading,
+} from "../../redux/contacts/selectors";
+import Loader from "../Loader/Loader.jsx";
 
 export default function ContactList() {
-  const contacts = useSelector((state) => state.contacts.contacts);
-  const filter = useSelector((state) => state.filter.filter);
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectFilteredContacts);
+  const loading = useSelector(selectLoading);
+  const error = useSelector(selectError);
 
-  const visiblePersons = contacts.filter((item) =>
-    item.name.toLowerCase().includes(filter.toLocaleLowerCase())
-  );
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
-    <ul className={css.list}>
-      {visiblePersons.map((item) => (
-        <li className={css.listItem} key={item.id}>
-          <Contact data={item} />
-        </li>
-      ))}
-    </ul>
+    <>
+      {loading && <Loader />}
+      <ul className={css.list}>
+        {error
+          ? error
+          : contacts.map((item) => (
+              <li className={css.listItem} key={item.id}>
+                <Contact data={item} />
+              </li>
+            ))}
+      </ul>
+    </>
   );
 }

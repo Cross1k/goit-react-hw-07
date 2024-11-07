@@ -1,10 +1,9 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { nanoid } from "nanoid";
 import { useId } from "react";
 import * as Yup from "yup";
 import css from "./ContactForm.module.css";
 import { useDispatch } from "react-redux";
-import { addContact } from "../../redux/contacts/contacts";
+import { addContactToList } from "../../redux/contacts/contactsOps";
 
 const PersonSchema = Yup.object().shape({
   name: Yup.string()
@@ -12,7 +11,7 @@ const PersonSchema = Yup.object().shape({
     .max(50, "Maximum 50 symbols")
     .required("Name is required"),
   number: Yup.string()
-    .matches(/^\d{3}-\d{2}-\d{2}$/, "Format is XXX-XX-XX")
+    .matches(/^\d{3}-\d{3}-\d{4}$/, "Format is XXX-XXX-XXXX")
     .required("Number is required"),
 });
 
@@ -28,7 +27,7 @@ export default function ContactForm() {
   const numberId = useId();
 
   const handleAdd = (values, actions) => {
-    const action = addContact({ id: nanoid(), ...values });
+    const action = addContactToList({ ...values });
     dispatch(action);
     actions.resetForm();
   };
